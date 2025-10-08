@@ -57,11 +57,13 @@ type XmlOptions = {
 function buildXml(
   node: Node,
   options: XmlOptions,
-  indent: string = ''
+  indent: string = '',
+  firstRun: boolean = true
 ): Buffer {
-  const xml = indent.length
-    ? ''
-    : '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  const xml =
+    indent.length || !firstRun
+      ? ''
+      : '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
 
   const xmlBuffers = [Buffer.from(xml, 'utf-8')];
   if (node._fTextNode)
@@ -82,7 +84,7 @@ function buildXml(
     let fLastChildIsNode = false;
     node._children.forEach(child => {
       xmlBuffers.push(
-        buildXml(child, options, options.indentXml ? `${indent}  ` : '')
+        buildXml(child, options, options.indentXml ? `${indent}  ` : '', false)
       );
       fLastChildIsNode = !child._fTextNode;
     });
