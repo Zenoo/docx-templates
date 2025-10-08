@@ -156,6 +156,12 @@ const report = await createReport({
    * (Default: false)
    */
   preserveSpace?: boolean;
+  /**
+   * Compression level for the generated docx file.
+   * Integer between 0 (no compression, fastest) and 9 (maximum compression, slowest).
+   * (Default: 1)
+   */
+  compressionLevel?: number;
 });
 ```
 

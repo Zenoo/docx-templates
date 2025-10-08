@@ -139,6 +139,12 @@ export type UserOptions = {
    * (Default: true)
    */
   preserveSpace?: boolean;
+  /**
+   * Compression level for the generated docx file.
+   * Integer between 0 (no compression, fastest) and 9 (maximum compression, slowest).
+   * (Default: 1)
+   */
+  compressionLevel?: number;
 };
 
 export type CreateReportOptions = {
@@ -156,6 +162,7 @@ export type CreateReportOptions = {
   maximumWalkingDepth?: number;
   indentXml: boolean;
   preserveSpace: boolean;
+  compressionLevel: number;
 };
 
 export type SandBox = {

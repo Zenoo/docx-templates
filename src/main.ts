@@ -165,6 +165,7 @@ async function createReport(
     maximumWalkingDepth: options.maximumWalkingDepth,
     indentXml: options.indentXml ?? true,
     preserveSpace: options.preserveSpace ?? true,
+    compressionLevel: options.compressionLevel ?? 1,
   };
   const xmlOptions = {
     literalXmlDelimiter,
@@ -309,7 +310,7 @@ async function createReport(
   }
 
   logger.debug('Zipping...');
-  const output = await zipSave(zip);
+  const output = await zipSave(zip, createOptions.compressionLevel);
   return output;
 }
 
@@ -349,6 +350,7 @@ export async function listCommands(
     processLineBreaksAsNewText: false,
     indentXml: true,
     preserveSpace: true,
+    compressionLevel: 1,
   };
 
   const { jsTemplate, mainDocument, zip } = await parseTemplate(template);
