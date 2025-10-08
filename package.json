@@ -1,6 +1,6 @@
 {
   "name": "@zenoo/docx-templates",
-  "version": "4.14.2",
+  "version": "4.14.3",
   "description": "Template-based docx report creation (fork with new options to reduce the output size)",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
