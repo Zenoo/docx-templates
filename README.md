@@ -2,6 +2,7 @@
 
 Template-based docx report creation for both Node and the browser. ([See the blog post](http://guigrpa.github.io/2017/01/01/word-docs-the-relay-way/)).
 
+<sub>PS: This is a fork that adds two options to reduce the output file size. It was published to be able to use use before the original author merges the changes. It will be unpublished once the changes are merged.</sub>
 
 ## Why?
 
