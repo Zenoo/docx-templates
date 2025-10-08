@@ -88,7 +88,11 @@ async function prepSecondaryXMLs(
     logger.debug(`${f} file length: ${raw.length}`);
     logger.debug(`Parsing ${f} XML...`);
     const js0 = await parseXml(raw);
-    const js = preprocessTemplate(js0, options.cmdDelimiter);
+    const js = preprocessTemplate(
+      js0,
+      options.cmdDelimiter,
+      options.preserveSpace
+    );
     prepped_secondaries.push([js, f]);
   }
   return prepped_secondaries;
@@ -159,8 +163,13 @@ async function createReport(
         ? false
         : options.processLineBreaksAsNewText,
     maximumWalkingDepth: options.maximumWalkingDepth,
+    indentXml: options.indentXml ?? true,
+    preserveSpace: options.preserveSpace ?? true,
   };
-  const xmlOptions = { literalXmlDelimiter };
+  const xmlOptions = {
+    literalXmlDelimiter,
+    indentXml: createOptions.indentXml,
+  };
 
   const { jsTemplate, mainDocument, zip, contentTypes } = await parseTemplate(
     template
@@ -169,7 +178,8 @@ async function createReport(
   logger.debug('Preprocessing template...');
   const prepped_template = preprocessTemplate(
     jsTemplate,
-    createOptions.cmdDelimiter
+    createOptions.cmdDelimiter,
+    createOptions.preserveSpace
   );
 
   // Fetch the data that will fill in the template
@@ -221,9 +231,9 @@ async function createReport(
 
   let numImages = Object.keys(images1).length;
   let numHtmls = Object.keys(htmls1).length;
-  await processImages(images1, mainDocument, zip);
-  await processLinks(links1, mainDocument, zip);
-  await processHtmls(htmls1, mainDocument, zip);
+  await processImages(images1, mainDocument, zip, createOptions.indentXml);
+  await processLinks(links1, mainDocument, zip, createOptions.indentXml);
+  await processHtmls(htmls1, mainDocument, zip, createOptions.indentXml);
 
   for (const [js, filePath] of prepped_secondaries) {
     // Grab the last used (highest) image id from the main document's context, but create
@@ -247,9 +257,14 @@ async function createReport(
 
     const segments = filePath.split('/');
     const documentComponent = segments[segments.length - 1];
-    await processImages(images2, documentComponent, zip);
-    await processLinks(links2, mainDocument, zip);
-    await processHtmls(htmls2, mainDocument, zip);
+    await processImages(
+      images2,
+      documentComponent,
+      zip,
+      createOptions.indentXml
+    );
+    await processLinks(links2, mainDocument, zip, createOptions.indentXml);
+    await processHtmls(htmls2, mainDocument, zip, createOptions.indentXml);
   }
 
   // Process [Content_Types].xml
@@ -332,6 +347,8 @@ export async function listCommands(
     errorHandler: null,
     fixSmartQuotes: false,
     processLineBreaksAsNewText: false,
+    indentXml: true,
+    preserveSpace: true,
   };
 
   const { jsTemplate, mainDocument, zip } = await parseTemplate(template);
@@ -339,7 +356,11 @@ export async function listCommands(
   const xmls = [jsTemplate, ...secondaries.map(([js, path]) => js)];
   const commands: CommandSummary[] = [];
   for (const js of xmls) {
-    const prepped = preprocessTemplate(js, opts.cmdDelimiter);
+    const prepped = preprocessTemplate(
+      js,
+      opts.cmdDelimiter,
+      opts.preserveSpace
+    );
     const ctx = newContext(opts);
     await walkTemplate(undefined, prepped, ctx, async (data, node, ctx) => {
       const raw = getCommand(
@@ -460,7 +481,8 @@ export function getMainDoc(contentTypes: NonTextNode): string {
 const processImages = async (
   images: Images,
   documentComponent: string,
-  zip: JSZip
+  zip: JSZip,
+  indentXml: boolean
 ) => {
   logger.debug(`Processing images for ${documentComponent}...`);
   const imageIds = Object.keys(images);
@@ -489,6 +511,7 @@ const processImages = async (
   }
   const finalRelsXml = buildXml(rels, {
     literalXmlDelimiter: DEFAULT_LITERAL_XML_DELIMITER,
+    indentXml,
   });
   zipSetText(zip, relsPath, finalRelsXml);
 };
@@ -496,7 +519,8 @@ const processImages = async (
 const processLinks = async (
   links: Links,
   documentComponent: string,
-  zip: JSZip
+  zip: JSZip,
+  indentXml: boolean
 ) => {
   logger.debug(`Processing links for ${documentComponent}...`);
   const linkIds = Object.keys(links);
@@ -518,6 +542,7 @@ const processLinks = async (
     }
     const finalRelsXml = buildXml(rels, {
       literalXmlDelimiter: DEFAULT_LITERAL_XML_DELIMITER,
+      indentXml,
     });
     zipSetText(zip, relsPath, finalRelsXml);
   }
@@ -526,7 +551,8 @@ const processLinks = async (
 const processHtmls = async (
   htmls: Htmls,
   documentComponent: string,
-  zip: JSZip
+  zip: JSZip,
+  indentXml: boolean
 ) => {
   logger.debug(`Processing htmls for ${documentComponent}...`);
   const htmlIds = Object.keys(htmls);
@@ -558,6 +584,7 @@ const processHtmls = async (
     }
     const finalRelsXml = buildXml(rels, {
       literalXmlDelimiter: DEFAULT_LITERAL_XML_DELIMITER,
+      indentXml,
     });
     zipSetText(zip, relsPath, finalRelsXml);
   }

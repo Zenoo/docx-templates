@@ -127,6 +127,18 @@ export type UserOptions = {
    * (Default: 1,000,000)
    */
   maximumWalkingDepth?: number;
+  /**
+   * Whether to indent the generated XML to make it more human-readable.
+   * Tip: Set this to false if you want to minimize the size of the generated docx file.
+   * (Default: true)
+   */
+  indentXml?: boolean;
+  /**
+   * Whether to preserve whitespace in the generated XML.*
+   * Tip: Set this to false if you want to minimize the size of the generated docx file.
+   * (Default: true)
+   */
+  preserveSpace?: boolean;
 };
 
 export type CreateReportOptions = {
@@ -142,6 +154,8 @@ export type CreateReportOptions = {
   fixSmartQuotes: boolean;
   processLineBreaksAsNewText: boolean;
   maximumWalkingDepth?: number;
+  indentXml: boolean;
+  preserveSpace: boolean;
 };
 
 export type SandBox = {
