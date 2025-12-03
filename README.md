@@ -469,8 +469,8 @@ Takes the HTML resulting from evaluating a JavaScript snippet and converts it to
 +++HTML `
 <meta charset="UTF-8">
 <body>
-  <h1>${$film.title}</h1>
-  <h3>${$film.releaseDate.slice(0, 4)}</h3>
+  <h1>${film.title}</h1>
+  <h3>${film.releaseDate.slice(0, 4)}</h3>
   <p>
     <strong style="color: red;">This paragraph should be red and strong</strong>
   </p>
